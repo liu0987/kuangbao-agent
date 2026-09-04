@@ -1,0 +1,1 @@
+# Mining News MCP Server

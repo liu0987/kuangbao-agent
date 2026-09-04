@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "mining-news": {
+      "command": "D:\\python_project\\AI\\kuangBao_agent\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "code.servers.mining_news.server"],
+      "cwd": "D:\\python_project\\AI\\kuangBao_agent",
+      "env": {}
+    },
+    "mineral-pdf": {
+      "command": "D:\\python_project\\AI\\kuangBao_agent\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "code.servers.mineral_pdf.server"],
+      "cwd": "D:\\python_project\\AI\\kuangBao_agent",
+      "env": {}
+    },
+    "commodity-price": {
+      "command": "D:\\python_project\\AI\\kuangBao_agent\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "code.servers.commodity_price.server"],
+      "cwd": "D:\\python_project\\AI\\kuangBao_agent",
+      "env": {}
+    }
+  }
+}

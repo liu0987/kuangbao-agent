@@ -1,0 +1,54 @@
+# 简化版 docker-compose - 使用统一 Dockerfile
+services:
+  # ── MCP Servers ─────────────────────────────────────────
+  mining-news-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - SERVICE_TYPE=mining-news
+      - MCP_PORT=8001
+    restart: unless-stopped
+
+  mineral-pdf-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - SERVICE_TYPE=mineral-pdf
+      - MCP_PORT=8002
+    restart: unless-stopped
+
+  commodity-price-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - SERVICE_TYPE=commodity-price
+      - MCP_PORT=8003
+    restart: unless-stopped
+
+  # ── Agent ───────────────────────────────────────────────
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mining-news-mcp
+      - mineral-pdf-mcp
+      - commodity-price-mcp
+    env_file:
+      - .env
+    environment:
+      - SERVICE_TYPE=agent
+      - MINING_NEWS_MCP_URL=http://mining-news-mcp:8001
+      - MINERAL_PDF_MCP_URL=http://mineral-pdf-mcp:8002
+      - COMMODITY_PRICE_MCP_URL=http://commodity-price-mcp:8003
+    ports:
+      - "8080:8080"

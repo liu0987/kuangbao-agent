@@ -1,0 +1,81 @@
+services:
+  # ── MCP Servers（SSE 模式，跨容器通信）──────────────────
+  mining-news-mcp:
+    build:
+      context: .
+      dockerfile: code/servers/mining_news/Dockerfile
+    ports:
+      - "${MINING_NEWS_MCP_PORT:-8001}:8001"
+    restart: unless-stopped
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_PORT=8001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mineral-pdf-mcp:
+    build:
+      context: .
+      dockerfile: code/servers/mineral_pdf/Dockerfile
+    ports:
+      - "${MINERAL_PDF_MCP_PORT:-8002}:8002"
+    volumes:
+      - mineru_models:/root/.cache/mineru
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_PORT=8002
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]  # 可选，无 GPU 自动降级为 CPU
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  commodity-price-mcp:
+    build:
+      context: .
+      dockerfile: code/servers/commodity_price/Dockerfile
+    ports:
+      - "${COMMODITY_PRICE_MCP_PORT:-8003}:8003"
+    restart: unless-stopped
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_PORT=8003
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Agent Client ──────────────────────────────────────
+  agent:
+    build:
+      context: .
+      dockerfile: code/agent/Dockerfile
+    depends_on:
+      mining-news-mcp:
+        condition: service_healthy
+      mineral-pdf-mcp:
+        condition: service_healthy
+      commodity-price-mcp:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - MINING_NEWS_MCP_URL=http://mining-news-mcp:8001
+      - MINERAL_PDF_MCP_URL=http://mineral-pdf-mcp:8002
+      - COMMODITY_PRICE_MCP_URL=http://commodity-price-mcp:8003
+    ports:
+      - "8080:8080"
+
+volumes:
+  mineru_models:

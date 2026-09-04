@@ -1,0 +1,30 @@
+# 虚拟环境
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 环境变量
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# MinerU 模型缓存
+.mineru_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# 生成的报告
+reports/
+
+# 日志文件
+logs/

@@ -1,0 +1,1 @@
+# Mineral PDF MCP Server
